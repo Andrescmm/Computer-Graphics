@@ -28,10 +28,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -43,10 +39,10 @@ int num = 0;
 int vertx = 0;
 int vertx1 = 0;
 
-vector<float>move = {
-    1.0f,0.0f,0.0f,
-
-};
+vector<float>left = {-1.0f,0.0f,0.0f};
+vector<float>right = {1.0f,0.0f,0.0f};
+vector<float>up = {0.0f,1.0f,0.0f};
+vector<float>down = {0.0f,-1.0f,0.0f};
 
 enum primitives { POINTS, LINE_STRIP, TRIANGLES };
 primitives PRIMITIVE_TYPE = primitives::TRIANGLES;
@@ -56,12 +52,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void processInput(GLFWwindow* window);
 
 
+void move (vector<float> &figure, vector<float>direction){
+    
+}
+
 // Settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 
-const char* vertexShaderSource = 
+const char* vertexShaderSource =
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
@@ -69,7 +69,7 @@ const char* vertexShaderSource =
     "   gl_Position = vec4(aPos, 1.0f);\n"
     "}\0";
 
-const char* fragmentShaderSource = 
+const char* fragmentShaderSource =
     "#version 330 core\n"
     "out vec4 FragColor;\n"
     "uniform vec4 ourColor;\n"
@@ -150,14 +150,8 @@ int main() {
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
-    // Triangle Vertices
-   // float verticesTriangle[] = {
-    //    -0.5f, -0.5f, 0.0f, // left
-    //     0.5f, -0.5f, 0.0f, // right
-   //      0.0f,  0.5f, 0.0f  // top
-  //  };
-
+    
+    
     // Triangle Vertices
     vector<float> triangle = {
         -0.5f, -0.5f, 0.0f, // left
@@ -166,7 +160,7 @@ int main() {
     };
 
     // Star Vertices
-    float verticesStar[] = {
+    vector<float> star = {
 
        -0.19,0.5f,0.0f, //C
        -0.6f,0.4f,0.0f, //E
@@ -182,7 +176,7 @@ int main() {
     };
 
     // Pizza Vertices
-    float verticesPizza[] = {
+    vector<float> pizza= {
         // 1
         0.0f, 0.0f, 0.0f, //A
         0.0f, 0.4f, 0.0f, //B
@@ -219,13 +213,13 @@ int main() {
 
 
     //Flecha Vertices
-    float verticesFlecha1[] = {
+    vector<float> flecha1 = {
        -0.5f, 0.2f, 0.0f,
         0.5f, 0.2f, 0.0f,
         0.0f,  0.8f, 0.0f
     };
 
-    float verticesFlecha2[] = {
+    vector<float> flecha2 = {
         -0.3f, -0.5f, 0.0f,
         -0.3f, 0.2f, 0.0f,
          0.3f,  0.2f, 0.0f,
@@ -243,35 +237,35 @@ int main() {
     // Triangle
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, triangle.size() * sizeof(float), &triangle[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // Stars
     glBindVertexArray(VAO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesStar), verticesStar, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, star.size() * sizeof(float), &star[0], GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // Pizza
     glBindVertexArray(VAO[2]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPizza), verticesPizza, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, pizza.size() * sizeof(float), &pizza[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     //Flecha 1
     glBindVertexArray(VAO[3]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesFlecha1), verticesFlecha1, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, flecha1.size() * sizeof(float), &flecha1[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     //Flecha 2
     glBindVertexArray(VAO[4]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesFlecha2), verticesFlecha2, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, flecha2.size() * sizeof(float), &flecha2[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -438,3 +432,4 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
+
