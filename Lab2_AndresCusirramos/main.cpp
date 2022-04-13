@@ -34,14 +34,19 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 using namespace std;
-
 
 float rValue = 0.0f, gValue = 0.0f, bValue = 0.0f;
 int num = 0;
 int vertx = 0;
 int vertx1 = 0;
+
+float k = 0.5f;
+
+glm::vec3 direc;
+
 
 enum primitives { POINTS, LINE_STRIP, TRIANGLES };
 primitives PRIMITIVE_TYPE = primitives::TRIANGLES;
@@ -49,6 +54,8 @@ primitives PRIMITIVE_TYPE = primitives::TRIANGLES;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void processInput(GLFWwindow* window);
+void move(vector<float>& figure, glm::vec3 direction);
+
 
 
 // Settings
@@ -56,28 +63,25 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 
-const char* vertexShaderSource = 
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "uniform mat4 transform;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = transform * vec4(aPos, 1.0f);\n"
-    "}\0";
+const char* vertexShaderSource =
+"#version 330 core\n"
+"layout (location = 0) in vec3 aPos;\n"
+"void main()\n"
+"{\n"
+"   gl_Position = vec4(aPos, 1.0f);\n"
+"}\0";
 
-const char* fragmentShaderSource = 
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "uniform vec4 ourColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = ourColor;\n"
-    "}\n\0";
+const char* fragmentShaderSource =
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"uniform vec4 ourColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = ourColor;\n"
+"}\n\0";
 
 
-// Define the vector
-glm::vec3 translationVector;
-bool randomMove;
+
 
 
 int main() {
@@ -128,6 +132,7 @@ int main() {
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -148,15 +153,16 @@ int main() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+
     // Triangle Vertices
-    float verticesTriangle[] = {
+    vector<float> triangle = {
         -0.5f, -0.5f, 0.0f, // left
          0.5f, -0.5f, 0.0f, // right
          0.0f,  0.5f, 0.0f  // top
     };
 
     // Star Vertices
-    float verticesStar[] = {
+    vector<float> star = {
 
        -0.19,0.5f,0.0f, //C
        -0.6f,0.4f,0.0f, //E
@@ -171,60 +177,57 @@ int main() {
 
     };
 
-   
-
     // Pizza Vertices
-    float verticesPizza[] = {
+    vector<float> pizza = {
         // 1
         0.0f, 0.0f, 0.0f, //A
         0.0f, 0.4f, 0.0f, //B
         0.3f,  0.3f, 0.0f, //C
-       // 2
+        // 2
         0.0f, 0.0f, 0.0f,  //A_2
         0.3f,  0.3f, 0.0f, //C_2
         0.4f,  0.0f, 0.0f,  //D
-      // 3
+        // 3
         0.0f, 0.0f, 0.0f,   //A_3
         0.4f,  0.0f, 0.0f,  //D_2
         0.3f, -0.3f, 0.0f,   //E
-      //4
+        //4
         0.0f, 0.0f, 0.0f,   //A_4
         0.3f, -0.3f, 0.0f,  //E_2
         0.0f, -0.4f, 0.0f,   //F
-      //5
+        //5
         0.0f, 0.0f, 0.0f,   //A_5
         0.0f, -0.4f, 0.0f,  //F_2
        -0.3f, -0.3f, 0.0f,  //G
-      //6
+        //6
         0.0f, 0.0f, 0.0f,   //A_6
        -0.3f, -0.3f, 0.0f,  //G_2
        -0.4f,  0.0f, 0.0f,  //H
-      //7
+        //7
         0.0f, 0.0f, 0.0f,   //A_7
        -0.4f,  0.0f, 0.0f,  //H_2
        -0.3f,  0.3f, 0.0f,  //I
-      //8
+        //8
         0.0f, 0.0f, 0.0f,   //A_8
        -0.3f,  0.3f, 0.0f,  //I_2
         0.0f, 0.4f, 0.0f   //B_2
-
     };
 
 
     //Flecha Vertices
-    float verticesFlecha1[] = {
-      -0.5f, 0.2f, 0.0f,
+    vector<float> flecha1 = {
+       -0.5f, 0.2f, 0.0f,
         0.5f, 0.2f, 0.0f,
         0.0f,  0.8f, 0.0f
     };
 
-    float verticesFlecha2[] = {
-      -0.3f, -0.5f, 0.0f,
+    vector<float> flecha2 = {
+        -0.3f, -0.5f, 0.0f,
         -0.3f, 0.2f, 0.0f,
-        0.3f,  0.2f, 0.0f,
-      -0.3f, -0.5f, 0.0f,
-        0.3f,  0.2f, 0.0f,
-        0.3f, -0.5f, 0.0f
+         0.3f,  0.2f, 0.0f,
+        -0.3f, -0.5f, 0.0f,
+         0.3f,  0.2f, 0.0f,
+         0.3f, -0.5f, 0.0f
     };
 
 
@@ -236,35 +239,35 @@ int main() {
     // Triangle
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTriangle), verticesTriangle, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, triangle.size() * sizeof(float), &triangle[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // Stars
     glBindVertexArray(VAO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesStar), verticesStar, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, star.size() * sizeof(float), &star[0], GL_DYNAMIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // Pizza
     glBindVertexArray(VAO[2]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPizza), verticesPizza, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, pizza.size() * sizeof(float), &pizza[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     //Flecha 1
     glBindVertexArray(VAO[3]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesFlecha1), verticesFlecha1, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, flecha1.size() * sizeof(float), &flecha1[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    //Felcha 2
+    //Flecha 2
     glBindVertexArray(VAO[4]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesFlecha2), verticesFlecha2, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, flecha2.size() * sizeof(float), &flecha2[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -275,26 +278,19 @@ int main() {
     // Render Loop
     while (true) {
 
-        if (randomMove) {
-            translationVector.x += ((rand() % 2) * -0.02) + 0.01f;
-            translationVector.y += ((rand() % 2) * -0.02) + 0.01f;
-        }
-
         processInput(window);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
-        // Transformation
-        glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::translate(transform, translationVector);
-
-        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
         int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-
         glUniform4f(vertexColorLocation, rValue, gValue, bValue, 1.0f);
+
+        move(triangle, direc);
+        move(star, direc);
+        move(pizza, direc);
+        
+
 
         switch (PRIMITIVE_TYPE) {
         case primitives::POINTS:
@@ -308,7 +304,7 @@ int main() {
             break;
 
         case primitives::LINE_STRIP:
-
+            
             glBindVertexArray(VAO[num]);
             glDrawArrays(GL_LINE_LOOP, 0, vertx);
             if (num == 3) {
@@ -327,6 +323,8 @@ int main() {
             }
             break;
         }
+        
+        
 
         //glBindVertexArray(VAO[num]);
        // glDrawArrays(GL_POINTS, 0, vertx);
@@ -343,6 +341,16 @@ int main() {
     return 0;
 }
 
+void move(vector<float>& figure, glm::vec3 direction) {
+    direction = normalize(direction);
+    direction = k * direction;
+
+    for (int i = 0; i < figure.size(); i += 3) {
+        figure[i] += direction[0];
+        figure[i + 1] += direction[1];
+        figure[i + 2] += direction[2];
+    }
+}
 
 void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -417,23 +425,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        if (translationVector.x < 0.5f)
-            translationVector.x += 0.01f;
+        direc = {1.0f, 0.0f, 0.0f};
     }
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        if (translationVector.x > -0.5f)
-            translationVector.x += -0.01f;
+        direc = { -0.1f, 0.0f, 0.0f };
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        if (translationVector.y < 0.4f)
-            translationVector.y += 0.01f;;
+        direc = { 0.0f, 0.1f, 0.0f };
     }
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        if (translationVector.y > -0.5)
-            translationVector.y += -0.01f;
+        direc = { 0.0f, -0.1f, 0.0f };
     }
 
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
