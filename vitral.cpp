@@ -1,4 +1,3 @@
-
 // Computacion Grafica : CCOMP 7-1
 // Andres Cusirramos Marquez Mares
 // 21/04/2022
@@ -176,7 +175,7 @@ int main() {
     glDeleteShader(fragmentShader);
 
 
-    // Vertices Marco 
+    // Vertices Marco
    const float verticesMarco[] = {
      -0.8f, 0.9f, 0.0f,  // A
       0.8f, 0.9f, 0.0f,  // B
@@ -237,7 +236,7 @@ int main() {
       -0.44f, 0.11f, 0.0f,
       -0.21f, -0.12f, 0.0f,
       -0.13f, -0.35f, 0.0f,
-      -0.07f, -0.63f, 0.0f, // I1 
+      -0.07f, -0.63f, 0.0f, // I1
       -0.06f, -0.87f, 0.0f,
       -0.29f, -0.76f, 0.0f,
       -0.55f, -0.53f, 0.0f,
@@ -249,7 +248,7 @@ int main() {
        0.41f, 0.07f, 0.0f,
        0.21f, -0.13f, 0.0f,
        0.11f, -0.35f, 0.0f,
-       0.05f, -0.63f, 0.0f, // I1 
+       0.05f, -0.63f, 0.0f, // I1
        0.03f, -0.86f, 0.0f,
        0.15f, -0.82f, 0.0f,
        0.27f, -0.75f, 0.0f,
@@ -271,33 +270,35 @@ int main() {
         0.0f,   0.0f,  0.0f,  //S2
         0.0f,   0.15f, 0.0f,  //R2
        -0.01f,  0.37f, 0.0f,  //I2
-       -0.15f,  0.58f, 0.0    //J2
-       
+       -0.15f,  0.58f, 0.0,    //J2
+    
 
-
-     // -0.01f, -0.11f, 0.0f,  //Q2
-     //  0.08f, -0.09f, 0.0f,  //M1
-     //  0.28f,  0.01f, 0.0f,  //N1
-     //  0.37f,  0.61f, 0.0f,  //Q1
-     //  0.42f,  0.38f, 0.0f,  //P1 
-     //  0.37f,  0.61f, 0.0f,  //Q1
-     //  0.35f,  0.8f,  0.0f,  //G2
-     //  0.13f,  0.62f, 0.0f,  //H2
+       0.36f,  0.81f,  0.0f,  //G2
+       0.37f,  0.61f, 0.0f,   //Q1
+       0.42f,  0.41f, 0.0f,   //P1
+       0.41f,  0.24f, 0.0f,   //O1
+       0.35f,  0.09f, 0.0f,   //N1
+       0.19f, -0.05f, 0.0f,   //M1
+      -0.01f, -0.12f, 0.0f,   //L1
+      -0.03f,  0.0f , 0.0f,   //T2
+      -0.03f,  0.15f, 0.0f,   //U2
+      -0.01f,  0.37f, 0.0f,   //I2
+       0.13f,  0.6f,  0.0f    //H2
       
 
    };
    const float verticesPetaloD[] = {
         0.36f,  0.81f,  0.0f,  //G2
         0.37f,  0.61f, 0.0f,   //Q1
-        0.42f,  0.38f, 0.0f,   //P1 
-     //  -0.01f, -0.11f, 0.0f,  //Q2
-     //  0.08f, -0.09f, 0.0f,  //M1
-     //  0.28f,  0.01f, 0.0f,  //N1
-     //  0.37f,  0.61f, 0.0f,  //Q1
-     //  0.42f,  0.38f, 0.0f,  //P1 
-     //  0.37f,  0.61f, 0.0f,  //Q1
-     
-     //  0.13f,  0.62f, 0.0f,  //H2
+        0.42f,  0.41f, 0.0f,   //P1
+        0.41f,  0.24f, 0.0f,   //O1
+        0.35f,  0.09f, 0.0f,   //N1
+        0.19f, -0.05f, 0.0f,   //M1
+       -0.01f, -0.12f, 0.0f,   //L1
+       -0.03f,  0.0f , 0.0f,   //T2
+       -0.03f,  0.15f, 0.0f,   //U2
+       -0.01f,  0.37f, 0.0f,   //I2
+        0.13f,  0.6f,  0.0f    //H2
    };
 
 
@@ -315,9 +316,9 @@ int main() {
      
  
     // Initial
-    unsigned int VBO[8], VAO[8];
-    glGenBuffers(8, VBO);
-    glGenVertexArrays(8, VAO);
+    unsigned int VBO[15], VAO[15];
+    glGenBuffers(15, VBO);
+    glGenVertexArrays(15, VAO);
 
     // Vertices Marco
     glBindVertexArray(VAO[0]);
@@ -372,6 +373,13 @@ int main() {
     glBindVertexArray(VAO[7]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPetaloI), verticesPetaloI, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    
+    // Vertices Petalo
+    glBindVertexArray(VAO[8]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[8]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPetaloD), verticesPetaloD, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
@@ -432,14 +440,21 @@ int main() {
         glBindVertexArray(VAO[7]);
         glDrawArrays(GL_LINE_LOOP, 0, 11);
 
+        glUseProgram(shaderWhite);
+        glBindVertexArray(VAO[7]);
+        glDrawArrays(GL_TRIANGLE_FAN,11, 22);
+        
+        glUseProgram(shaderBlack);
+        glBindVertexArray(VAO[8]);
+        glDrawArrays(GL_LINE_LOOP, 0, 11);
 
         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(8, VAO);
-    glDeleteBuffers(8, VBO);
+    glDeleteVertexArrays(15, VAO);
+    glDeleteBuffers(15, VBO);
     glDeleteProgram(shaderProgram);
 
 
