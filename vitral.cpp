@@ -57,6 +57,13 @@ const char* fragmentShaderGreen =
 " FragColor = vec4(0.146f, 0.55f, 0.146f, 1.0f);\n"
 "}\n";
 
+const char* fragmentShaderWhite =
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main() {\n"
+" FragColor = vec4(0.255f, 0.255f, 0.255f, 1.0f);\n"
+"}\n";
+
 const char* fragmentShader1Source = "#version 330 core\n"
 "out vec4 FragColor;\n"
 "void main()\n"
@@ -126,22 +133,10 @@ int main() {
     glShaderSource(fragmentGreen, 1, &fragmentShaderGreen, NULL);
     glCompileShader(fragmentGreen);
 
+    unsigned int fragmentWhite = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentWhite, 1, &fragmentShaderWhite, NULL);
+    glCompileShader(fragmentWhite);
 
-    unsigned int fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER); // the first fragment shader that outputs the color orange
-    unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER); // the second fragment shader that outputs the color yellow
-    unsigned int shaderProgramOrange = glCreateProgram();
-    unsigned int shaderProgramYellow = glCreateProgram(); // the second shader program
-
-    glShaderSource(fragmentShaderOrange, 1, &fragmentShader1Source, NULL);
-    glCompileShader(fragmentShaderOrange);
-    glShaderSource(fragmentShaderYellow, 1, &fragmentShader2Source, NULL);
-    glCompileShader(fragmentShaderYellow);
-    glAttachShader(shaderProgramOrange, vertexShader);
-    glAttachShader(shaderProgramOrange, fragmentShaderOrange);
-    glLinkProgram(shaderProgramOrange);
-    glAttachShader(shaderProgramYellow, vertexShader);
-    glAttachShader(shaderProgramYellow, fragmentShaderYellow);
-    glLinkProgram(shaderProgramYellow);
 
 
     // link shaders
@@ -168,8 +163,13 @@ int main() {
     glAttachShader(shaderGreen, vertexShader);
     glAttachShader(shaderGreen, fragmentGreen);
     glLinkProgram(shaderGreen);
-  
-    
+
+    unsigned int shaderWhite;
+    shaderWhite = glCreateProgram();
+    glAttachShader(shaderWhite, vertexShader);
+    glAttachShader(shaderWhite, fragmentWhite);
+    glLinkProgram(shaderWhite);
+
 
     glUseProgram(shaderProgram);
     glDeleteShader(vertexShader);
@@ -257,6 +257,50 @@ int main() {
        0.71f, -0.19f, 0.0
    };
 
+
+   //Vertices Petalos
+   const float verticesPetaloI[] = {
+       //Left
+       -0.39f,  0.81f, 0.0f,  //K2
+       -0.41f,  0.63f, 0.0f,  //M2
+       -0.45f,  0.43f, 0.0f,  //L2
+       -0.44f,  0.21f, 0.0f,  //N2
+       -0.34f,  0.03f, 0.0f,  //O2
+       -0.2f,  -0.07f, 0.0f,  //Q2
+       -0.01f, -0.12f, 0.0f,  //L1
+        0.0f,   0.0f,  0.0f,  //S2
+        0.0f,   0.15f, 0.0f,  //R2
+       -0.01f,  0.37f, 0.0f,  //I2
+       -0.15f,  0.58f, 0.0    //J2
+       
+
+
+     // -0.01f, -0.11f, 0.0f,  //Q2
+     //  0.08f, -0.09f, 0.0f,  //M1
+     //  0.28f,  0.01f, 0.0f,  //N1
+     //  0.37f,  0.61f, 0.0f,  //Q1
+     //  0.42f,  0.38f, 0.0f,  //P1 
+     //  0.37f,  0.61f, 0.0f,  //Q1
+     //  0.35f,  0.8f,  0.0f,  //G2
+     //  0.13f,  0.62f, 0.0f,  //H2
+      
+
+   };
+   const float verticesPetaloD[] = {
+        0.36f,  0.81f,  0.0f,  //G2
+        0.37f,  0.61f, 0.0f,   //Q1
+        0.42f,  0.38f, 0.0f,   //P1 
+     //  -0.01f, -0.11f, 0.0f,  //Q2
+     //  0.08f, -0.09f, 0.0f,  //M1
+     //  0.28f,  0.01f, 0.0f,  //N1
+     //  0.37f,  0.61f, 0.0f,  //Q1
+     //  0.42f,  0.38f, 0.0f,  //P1 
+     //  0.37f,  0.61f, 0.0f,  //Q1
+     
+     //  0.13f,  0.62f, 0.0f,  //H2
+   };
+
+
    const float verticesHojaD1[] = {
       0.05f, -0.86f, 0.0f,
       0.1f,  -0.77f, 0.0f,
@@ -324,6 +368,12 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // Vertices Petalo
+    glBindVertexArray(VAO[7]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[7]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesPetaloI), verticesPetaloI, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
     
     glPointSize(4);
     glLineWidth(16);
@@ -354,9 +404,17 @@ int main() {
         glBindVertexArray(VAO[5]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 9);
 
+        glUseProgram(shaderBlack);
+        glBindVertexArray(VAO[5]);
+        glDrawArrays(GL_LINE_LOOP, 0, 9);
+
         glUseProgram(shaderGreen);
         glBindVertexArray(VAO[6]);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 10);
+
+        glUseProgram(shaderBlack);
+        glBindVertexArray(VAO[6]);
+        glDrawArrays(GL_LINE_LOOP, 0, 10);
 
         glUseProgram(shaderBlack);
         glBindVertexArray(VAO[3]);
@@ -365,6 +423,14 @@ int main() {
         glUseProgram(shaderBlack);
         glBindVertexArray(VAO[4]);
         glDrawArrays(GL_LINE_STRIP, 0, 6);
+
+        glUseProgram(shaderWhite);
+        glBindVertexArray(VAO[7]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 11);
+
+        glUseProgram(shaderBlack);
+        glBindVertexArray(VAO[7]);
+        glDrawArrays(GL_LINE_LOOP, 0, 11);
 
 
         
