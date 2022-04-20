@@ -40,7 +40,7 @@ const char* fragmentShaderBlue =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
 "void main() {\n"
-" FragColor = vec4(0.43f, 0.77f, 0.223f, 1.0f);\n"
+" FragColor = vec4( 0.143f, 0.197f, 0.187f, 1.f);\n"
 "}\n";
 
 const char* fragmentShaderBlack =
@@ -168,6 +168,84 @@ int main() {
      -0.78f, -0.88f, 0.0f, // D
       0.78f, -0.88f, 0.0f, // C
    };
+
+   // Vertices Tallo
+   const float verticesTallo[] = {
+        0.03f,-0.86f,0.0f,
+       -0.05f,-0.86f,0.0f,
+       -0.04f,-0.12f,0.0f,
+
+        0.03f,-0.12f,0.0f,
+       -0.04f,-0.12f,0.0f,
+        0.03f,-0.86f,0.0f
+   };
+
+   // Vertices Borde hojas
+   const float verticesHojaD[] = {
+       //0
+       0.05f, -0.86f, 0.0f,
+       0.1f,  -0.85f, 0.0f,
+       0.26f,  -0.76f, 0.0f,
+       0.47f, -0.57f, 0.0f,
+       0.65f, -0.34f, 0.0f,
+       0.72f, -0.17f, 0.0f,
+       0.77f, -0.01f, 0.0f,
+       0.77f, 0.1f , 0.0f,
+       0.76f, 0.21f, 0.0f,
+       0.68f, 0.12f, 0.0f,
+       0.57f, -0.04f, 0.0f,
+       0.36f, -0.35f, 0.0f,
+       0.2f,  -0.6f, 0.0f,
+       0.1f,  -0.77f, 0.0f,
+       0.05f, -0.86f, 0.0f
+     
+       //15
+
+       //43
+   };
+
+   const float verticesHojaD1[] = {
+       0.05f, -0.86f, 0.0f,
+       0.1f,  -0.77f, 0.0f,
+       0.2f,  -0.6f, 0.0f,
+       0.36f, -0.35f, 0.0f,
+       0.57f, -0.04f, 0.0f,
+       0.68f, 0.12f, 0.0f,
+       0.76f, 0.21f, 0.0f,
+       0.65f,  0.18f, 0.0f, //G1
+       0.05f,  0.12f, 0.0f, //H1
+       0.39f,  0.06f, 0.0f, //J1
+       0.26f, -0.04f, 0.0f, //L1
+       0.17f, -0.19f, 0.0f, //M1
+       0.11f, -0.35f, 0.0f, //N1
+       0.08f, -0.48f, 0.0f, //O1
+       0.05f, -0.63f, 0.0f, //P1
+       0.03f, -0.78f, 0.0f, //Q1
+       0.02f, -0.86f, 0.0f, //R1
+       0.05f, -0.86f, 0.0f  
+       //18
+   };
+
+
+   // Vertices Hojas
+   const float verticesHojas[] = {
+      -0.5f, 0.1f, 0.0f,
+      -0.25f, 0.05f, 0.0f,
+      -0.35f, -0.22f, 0.0f,
+      -0.12f, -0.05f, 0.0f,
+      -0.25f, -0.5f, 0.0f,
+       0.0f, -0.2f, 0.0f,
+      -0.14f, -0.63f, 0.0f,
+       0.0f, -0.7f, 0.0f,
+
+       0.14f, -0.63f, 0.0f,
+       0.0f, -0.2f, 0.0f,
+       0.25f, -0.5f, 0.0f,
+       0.12f, -0.05f, 0.0f,
+       0.35f, -0.22f, 0.0f,
+       0.25f, 0.05f, 0.0f,
+       0.5f, 0.1f, 0.0f
+   };
      
  
     // Initial
@@ -182,15 +260,33 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-
     // Vertices Fondo
     glBindVertexArray(VAO[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verticesFondo), verticesFondo, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-   
 
+    // Vertices Tallo
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesTallo), verticesTallo, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+   
+    // Vertices Hoja
+    glBindVertexArray(VAO[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesHojaD), verticesHojaD, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Vertices Hoja
+    glBindVertexArray(VAO[4]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesHojaD1), verticesHojaD1, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     
     glPointSize(4);
@@ -213,6 +309,20 @@ int main() {
         glUseProgram(shaderBlue);
         glBindVertexArray(VAO[1]);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glUseProgram(shaderProgram);
+        glBindVertexArray(VAO[2]);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glUseProgram(shaderBlack);
+        glBindVertexArray(VAO[3]);
+        glDrawArrays(GL_LINE_LOOP, 0, 15);
+
+        glUseProgram(shaderBlack);
+        glBindVertexArray(VAO[4]);
+        glDrawArrays(GL_LINE_STRIP, 0, 18);
+
+      
            
    
         glfwSwapBuffers(window);
@@ -237,4 +347,5 @@ void processInput(GLFWwindow* window) {
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
+
 
