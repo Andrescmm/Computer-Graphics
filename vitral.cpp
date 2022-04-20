@@ -1,3 +1,4 @@
+
 // Computacion Grafica : CCOMP 7-1
 // Andres Cusirramos Marquez Mares
 // 21/04/2022
@@ -7,7 +8,6 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-#include <cmath>
 
 using namespace std;
 
@@ -50,11 +50,11 @@ const char* fragmentShaderBlack =
 " FragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);\n"
 "}\n";
 
-const char* fragmentShaderRed =
+const char* fragmentShaderGreen =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
 "void main() {\n"
-" FragColor = vec4(0.8f, 0.0f, 0.0f, 1.0f);\n"
+" FragColor = vec4(0.146f, 0.55f, 0.146f, 1.0f);\n"
 "}\n";
 
 const char* fragmentShader1Source = "#version 330 core\n"
@@ -122,7 +122,34 @@ int main() {
     glShaderSource(fragmentBlack, 1, &fragmentShaderBlack, NULL);
     glCompileShader(fragmentBlack);
 
+    unsigned int fragmentGreen = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentGreen, 1, &fragmentShaderGreen, NULL);
+    glCompileShader(fragmentGreen);
+
+
+    unsigned int fragmentShaderOrange = glCreateShader(GL_FRAGMENT_SHADER); // the first fragment shader that outputs the color orange
+    unsigned int fragmentShaderYellow = glCreateShader(GL_FRAGMENT_SHADER); // the second fragment shader that outputs the color yellow
+    unsigned int shaderProgramOrange = glCreateProgram();
+    unsigned int shaderProgramYellow = glCreateProgram(); // the second shader program
+
+    glShaderSource(fragmentShaderOrange, 1, &fragmentShader1Source, NULL);
+    glCompileShader(fragmentShaderOrange);
+    glShaderSource(fragmentShaderYellow, 1, &fragmentShader2Source, NULL);
+    glCompileShader(fragmentShaderYellow);
+    glAttachShader(shaderProgramOrange, vertexShader);
+    glAttachShader(shaderProgramOrange, fragmentShaderOrange);
+    glLinkProgram(shaderProgramOrange);
+    glAttachShader(shaderProgramYellow, vertexShader);
+    glAttachShader(shaderProgramYellow, fragmentShaderYellow);
+    glLinkProgram(shaderProgramYellow);
+
+
     // link shaders
+
+    unsigned int shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
 
     unsigned int shaderBlue;
     shaderBlue = glCreateProgram();
@@ -135,13 +162,16 @@ int main() {
     glAttachShader(shaderBlack, vertexShader);
     glAttachShader(shaderBlack, fragmentBlack);
     glLinkProgram(shaderBlack);
+
+    unsigned int shaderGreen;
+    shaderGreen = glCreateProgram();
+    glAttachShader(shaderGreen, vertexShader);
+    glAttachShader(shaderGreen, fragmentGreen);
+    glLinkProgram(shaderGreen);
   
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    
 
-
+    glUseProgram(shaderProgram);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
@@ -156,7 +186,6 @@ int main() {
      -0.8f, -0.9f, 0.0f, // D
       0.8f, -0.9f, 0.0f // C
     };
-
 
    // Vertices Fondo
    const float verticesFondo[] = {
@@ -182,15 +211,7 @@ int main() {
 
    // Vertices Borde hojas
    const float verticesHojaD[] = {
-       //0
-       0.05f, -0.86f, 0.0f,
-       0.1f,  -0.85f, 0.0f,
-       0.26f,  -0.76f, 0.0f,
-       0.47f, -0.57f, 0.0f,
-       0.65f, -0.34f, 0.0f,
-       0.72f, -0.17f, 0.0f,
-       0.77f, -0.01f, 0.0f,
-       0.77f, 0.1f , 0.0f,
+      // Rigth
        0.76f, 0.21f, 0.0f,
        0.68f, 0.12f, 0.0f,
        0.57f, -0.04f, 0.0f,
@@ -198,60 +219,61 @@ int main() {
        0.2f,  -0.6f, 0.0f,
        0.1f,  -0.77f, 0.0f,
        0.05f, -0.86f, 0.0f
-     
-       //15
+   };
+   const float verticesHojaI[] = {
+       //Left
+      -0.07f, -0.83f, 0.0f,
+      -0.23f, -0.63f, 0.0f,
+      -0.4f,  -0.4f, 0.0f,
+      -0.51f, -0.2f, 0.0f,
+      -0.65f,  0.0f, 0.0f,
+      -0.76f,  0.18f, 0.0f
+   };
 
-       //43
+   // Vertices Hojas
+   const float verticesHojasI[] = {
+       //Left
+      -0.77f, 0.24f, 0.0f,
+      -0.44f, 0.11f, 0.0f,
+      -0.21f, -0.12f, 0.0f,
+      -0.13f, -0.35f, 0.0f,
+      -0.07f, -0.63f, 0.0f, // I1 
+      -0.06f, -0.87f, 0.0f,
+      -0.29f, -0.76f, 0.0f,
+      -0.55f, -0.53f, 0.0f,
+      -0.74f, -0.16f, 0.0
+   };
+   const float verticesHojasD[] = {
+       //Rigth
+       0.76f, 0.22f, 0.0f,
+       0.41f, 0.07f, 0.0f,
+       0.21f, -0.13f, 0.0f,
+       0.11f, -0.35f, 0.0f,
+       0.05f, -0.63f, 0.0f, // I1 
+       0.03f, -0.86f, 0.0f,
+       0.15f, -0.82f, 0.0f,
+       0.27f, -0.75f, 0.0f,
+       0.49f, -0.56f, 0.0f,
+       0.71f, -0.19f, 0.0
    };
 
    const float verticesHojaD1[] = {
-       0.05f, -0.86f, 0.0f,
-       0.1f,  -0.77f, 0.0f,
-       0.2f,  -0.6f, 0.0f,
-       0.36f, -0.35f, 0.0f,
-       0.57f, -0.04f, 0.0f,
-       0.68f, 0.12f, 0.0f,
-       0.76f, 0.21f, 0.0f,
-       0.65f,  0.18f, 0.0f, //G1
-       0.05f,  0.12f, 0.0f, //H1
-       0.39f,  0.06f, 0.0f, //J1
-       0.26f, -0.04f, 0.0f, //L1
-       0.17f, -0.19f, 0.0f, //M1
-       0.11f, -0.35f, 0.0f, //N1
-       0.08f, -0.48f, 0.0f, //O1
-       0.05f, -0.63f, 0.0f, //P1
-       0.03f, -0.78f, 0.0f, //Q1
-       0.02f, -0.86f, 0.0f, //R1
-       0.05f, -0.86f, 0.0f  
-       //18
-   };
-
-
-   // Vertices Hojas
-   const float verticesHojas[] = {
-      -0.5f, 0.1f, 0.0f,
-      -0.25f, 0.05f, 0.0f,
-      -0.35f, -0.22f, 0.0f,
-      -0.12f, -0.05f, 0.0f,
-      -0.25f, -0.5f, 0.0f,
-       0.0f, -0.2f, 0.0f,
-      -0.14f, -0.63f, 0.0f,
-       0.0f, -0.7f, 0.0f,
-
-       0.14f, -0.63f, 0.0f,
-       0.0f, -0.2f, 0.0f,
-       0.25f, -0.5f, 0.0f,
-       0.12f, -0.05f, 0.0f,
-       0.35f, -0.22f, 0.0f,
-       0.25f, 0.05f, 0.0f,
-       0.5f, 0.1f, 0.0f
+      0.05f, -0.86f, 0.0f,
+      0.1f,  -0.77f, 0.0f,
+      0.2f,  -0.6f, 0.0f,
+      0.65f,  0.18f, 0.0f, //G1
+      0.05f,  0.12f, 0.0f, //H1
+      0.39f,  0.06f, 0.0f, //J1
+      0.26f, -0.04f, 0.0f, //L1
+      0.17f, -0.19f, 0.0f, //M1
+      0.05f, -0.86f, 0.0f
    };
      
  
     // Initial
-    unsigned int VBO[5], VAO[5];
-    glGenBuffers(5, VBO);
-    glGenVertexArrays(5, VAO);
+    unsigned int VBO[8], VAO[8];
+    glGenBuffers(8, VBO);
+    glGenVertexArrays(8, VAO);
 
     // Vertices Marco
     glBindVertexArray(VAO[0]);
@@ -284,7 +306,21 @@ int main() {
     // Vertices Hoja
     glBindVertexArray(VAO[4]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesHojaD1), verticesHojaD1, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesHojaI), verticesHojaI, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Vertices Hoja
+    glBindVertexArray(VAO[5]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[5]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesHojasI), verticesHojasI, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Vertices Hoja
+    glBindVertexArray(VAO[6]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[6]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesHojasD), verticesHojasD, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -314,23 +350,30 @@ int main() {
         glBindVertexArray(VAO[2]);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
+        glUseProgram(shaderGreen);
+        glBindVertexArray(VAO[5]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 9);
+
+        glUseProgram(shaderGreen);
+        glBindVertexArray(VAO[6]);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 10);
+
         glUseProgram(shaderBlack);
         glBindVertexArray(VAO[3]);
-        glDrawArrays(GL_LINE_LOOP, 0, 15);
+        glDrawArrays(GL_LINE_STRIP, 0, 7);
 
         glUseProgram(shaderBlack);
         glBindVertexArray(VAO[4]);
-        glDrawArrays(GL_LINE_STRIP, 0, 18);
+        glDrawArrays(GL_LINE_STRIP, 0, 6);
 
-      
-           
-   
+
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(5, VAO);
-    glDeleteBuffers(5, VBO);
+    glDeleteVertexArrays(8, VAO);
+    glDeleteBuffers(8, VBO);
     glDeleteProgram(shaderProgram);
 
 
@@ -347,5 +390,6 @@ void processInput(GLFWwindow* window) {
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
+
 
 
