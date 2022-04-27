@@ -1,4 +1,4 @@
-// Computacion Grafica : CCOMP 7-1
+/ Computacion Grafica : CCOMP 7-1
 // Andres Cusirramos Marquez Mares
 // 12/04/2022
 
@@ -35,24 +35,29 @@
 
 using namespace std;
 
+// Variables
+unsigned int VBO[5], VAO[5];
+
 float rValue = 0.0f, gValue = 0.0f, bValue = 0.0f;
-int num = 0;
+int modo = 0;
 int vertx = 0;
 int vertx1 = 0;
 
 float k = 0.5f;
 
+char figure = 'P';
+
+float X = 0.1f;
+float Y = 0.1f;
 
 
-enum primitives { POINTS, LINE_STRIP, TRIANGLES };
-primitives PRIMITIVE_TYPE = primitives::TRIANGLES;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void processInput(GLFWwindow* window);
 
 void moveMatrix(vector<float>& figure, vector<vector<float>>& matrix) {
-     vector<float> matrixRes;
+    
     for (int i = 0; i < figure.size(); i += 3) {
         figure[i] = ((matrix[0][0] * figure[i]) + (matrix[0][1] * figure[i + 1]) + (matrix[0][2] * figure[i + 2]));
         
@@ -66,6 +71,12 @@ void moveMatrix(vector<float>& figure, vector<vector<float>>& matrix) {
     }
     
 }
+
+
+//void matrixT(float x, float y , vector<float>& figure) {
+  
+vector < vector<float> >matrixTranslate = { {1.0f,0.0f,X},{0.0f,1.0f,Y},{0.0f,0.0f,1.0f} };
+    //moveMatrix(figure, matrixTranslate);
 
 
 
@@ -94,9 +105,8 @@ const char* fragmentShaderSource =
 
 
 // Matrices
-float X = 0.5f;
-float Y = 0.4f;
-vector < vector<float> >matrixTranslate = {{1.0f,0.0f,X},{0.0f,1.0f,Y},{0.0f,0.0f,1.0f} };
+
+
 
 float W, H;
 vector < vector<float> >matrixScale = { {W,0.0f,0.0f},{0.0f,H,0.0f},{0.0f,0.0f,1.0f} };
@@ -166,24 +176,68 @@ vector<float> pizza = {
 };
 
 
-//Flecha Vertices
-vector<float> flecha1 = {
-   -0.5f, 0.2f, 0.0f,
-    0.5f, 0.2f, 0.0f,
-    0.0f,  0.8f, 0.0f
-};
 
-vector<float> flecha2 = {
-    -0.3f, -0.5f, 0.0f,
-    -0.3f, 0.2f, 0.0f,
-     0.3f,  0.2f, 0.0f,
-    -0.3f, -0.5f, 0.0f,
-     0.3f,  0.2f, 0.0f,
-     0.3f, -0.5f, 0.0f
-};
+// Drawing
+/// Triangle
+void drawTriangle() {
+    // Initial
+    unsigned int VBO[5], VAO[5];
+    glGenBuffers(5, VBO);
+    glGenVertexArrays(5, VAO);
+
+    // Triangle
+    glBindVertexArray(VAO[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, triangle.size() * sizeof(float), &triangle[0], GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(VAO[0]);
+}
+
+/// Star
+void drawStar() {
+    // Initial
+    unsigned int VBO[5], VAO[5];
+    glGenBuffers(5, VBO);
+    glGenVertexArrays(5, VAO);
+
+    // Star
+    glBindVertexArray(VAO[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBufferData(GL_ARRAY_BUFFER, star.size() * sizeof(float), &star[0], GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(VAO[1]);
+
+}
+
+/// Pizza
+void drawPizza() {
+    // Initial
+    unsigned int VBO[5], VAO[5];
+    glGenBuffers(5, VBO);
+    glGenVertexArrays(5, VAO);
+    // Pizza
+    glBindVertexArray(VAO[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBufferData(GL_ARRAY_BUFFER, pizza.size() * sizeof(float), &pizza[0], GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(VAO[2]);
+}
 
 
 
+// Main
 int main() {
 
     glfwInit();
@@ -254,48 +308,7 @@ int main() {
     glDeleteShader(fragmentShader);
 
 
-  
-
-    // Initial
-    unsigned int VBO[5], VAO[5];
-    glGenBuffers(5, VBO);
-    glGenVertexArrays(5, VAO);
-
-    // Triangle
-    glBindVertexArray(VAO[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, triangle.size() * sizeof(float), &triangle[0], GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Stars
-    glBindVertexArray(VAO[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-    glBufferData(GL_ARRAY_BUFFER, star.size() * sizeof(float), &star[0], GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // Pizza
-    glBindVertexArray(VAO[2]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-    glBufferData(GL_ARRAY_BUFFER, pizza.size() * sizeof(float), &pizza[0], GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    //Flecha 1
-    glBindVertexArray(VAO[3]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
-    glBufferData(GL_ARRAY_BUFFER, flecha1.size() * sizeof(float), &flecha1[0], GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    //Flecha 2
-    glBindVertexArray(VAO[4]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO[4]);
-    glBufferData(GL_ARRAY_BUFFER, flecha2.size() * sizeof(float), &flecha2[0], GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
+    // Sizes
     glPointSize(4);
     glLineWidth(8);
 
@@ -311,41 +324,45 @@ int main() {
         int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         glUniform4f(vertexColorLocation, rValue, gValue, bValue, 1.0f);
 
-        moveMatrix(triangle, matrixTranslate);
-
-
-        switch (PRIMITIVE_TYPE) {
-        case primitives::POINTS:
-
-            glBindVertexArray(VAO[num]);
-            glDrawArrays(GL_POINTS, 0, vertx);
-            if (num == 3) {
-                glBindVertexArray(VAO[4]);
-                glDrawArrays(GL_POINTS, 0, vertx1);
+        // Pizza
+        if (figure == 'P') {
+            if (modo == 0) {
+                glDrawArrays(GL_LINE_LOOP, 0,24);
             }
-            break;
-
-        case primitives::LINE_STRIP:
-            
-            glBindVertexArray(VAO[num]);
-            glDrawArrays(GL_LINE_LOOP, 0, vertx);
-            if (num == 3) {
-                glBindVertexArray(VAO[4]);
-                glDrawArrays(GL_LINE_LOOP, 0, vertx1);
+            if (modo == 1) {
+                glDrawArrays(GL_TRIANGLE_FAN, 0, 24);
             }
-            break;
-
-        case primitives::TRIANGLES:
-
-            glBindVertexArray(VAO[num]);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, vertx);
-            if (num == 3) {
-                glBindVertexArray(VAO[4]);
-                glDrawArrays(GL_TRIANGLE_FAN, 0, vertx1);
+            if (modo == 2) {
+                glDrawArrays(GL_POINTS,0,24);
             }
-            break;
         }
-        
+        // Star
+        if (figure == 'S') {
+            if (modo == 0) {
+                glDrawArrays(GL_LINE_LOOP, 0, 10);
+            }
+            if (modo == 1) {
+                glDrawArrays(GL_TRIANGLE_FAN, 0, 10);
+            }
+            if (modo == 2) {
+                glDrawArrays(GL_POINTS, 0, 10);
+            }
+        }
+        if (figure == 'T') {
+            //PIZZA
+            if (modo == 0) {
+                glDrawArrays(GL_LINE_LOOP, 0, 3);
+            }
+            if (modo == 1) {
+                glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
+            }
+            if (modo == 2) {
+                glDrawArrays(GL_POINTS, 0, 3);
+            }
+        }
+      
+
+
         
 
         //glBindVertexArray(VAO[num]);
@@ -380,6 +397,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         rValue = 255.0f;
         gValue = 0.0f;
@@ -416,40 +434,54 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         bValue = 255.0f;
     }
 
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) { // Triangle
-        num = 0;
-        vertx = 3;
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {// Triangle
+        figure = 'T';
+        drawTriangle();
     }
 
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {// Star
-        num = 1;
-        vertx = 10;
+        figure = 'S';
+        drawStar();
+
     }
 
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {// Pizza
-        num = 2;
-        vertx = 24;
+        figure = 'P';
+        drawPizza();
     }
 
-    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {// House
-        num = 3;
-        vertx = 3;
-        vertx1 = 6;
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        modo = 2;
+    }
+        
+
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+        modo = 0;
+    }
+        
+
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+        modo = 1;
     }
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+        X += 0.1f;
+        Y += 0.1f;
+        cout << "X -> " << X << endl;
+        cout << "Y -> " << Y << endl;
+        moveMatrix(triangle, matrixTranslate);
+        drawTriangle();
     }
 
-
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-        PRIMITIVE_TYPE = primitives::POINTS;
-
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        PRIMITIVE_TYPE = primitives::LINE_STRIP;
-
-    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
-        PRIMITIVE_TYPE = primitives::TRIANGLES;
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+        cout << "X -> " << X << endl;
+        cout << "Y -> " << Y << endl;
+        X -= 0.1f;
+        Y -= 0.1f;
+        moveMatrix(triangle, matrixTranslate);
+        drawTriangle();
+    }
+       
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
