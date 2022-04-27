@@ -1,6 +1,6 @@
-/ Computacion Grafica : CCOMP 7-1
+// Computacion Grafica : CCOMP 7-1
 // Andres Cusirramos Marquez Mares
-// 12/04/2022
+// 27/04/2022
 
 
 // P -> POINTS
@@ -19,15 +19,22 @@
 // Y -> YELLOW COLOR
 // C -> CIAN COLOR
 
-// W -> UP
-// S -> DOWN
-// D -> RIGHT
-// A -> LEFT
+
 
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <iostream>
 #include <cmath>
@@ -47,37 +54,43 @@ float k = 0.5f;
 
 char figure = 'P';
 
-float X = 0.1f;
-float Y = 0.1f;
+//float X = 0.3f;
+//float Y = 0.3f;
 
+// Matrices
+float X, Y;
+vector < vector<float> >matrixTranslate = { {1.0f,0.0f,X},{0.0f,1.0f,Y},{0.0f,0.0f,1.0f} };
 
+float W, H;
+vector < vector<float> >matrixScale = { {W,0.0f,0.0f},{0.0f,H,0.0f},{0.0f,0.0f,1.0f} };
+
+int angle;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void processInput(GLFWwindow* window);
+void transM(vector<float>& figure, float x, float y);
+void scaleM(vector<float>& figure, float w, float h);
+void rotateM(vector<float>& figure, int angle);
+
+
+
+
 
 void moveMatrix(vector<float>& figure, vector<vector<float>>& matrix) {
-    
+
+ 
+
     for (int i = 0; i < figure.size(); i += 3) {
-        figure[i] = ((matrix[0][0] * figure[i]) + (matrix[0][1] * figure[i + 1]) + (matrix[0][2] * figure[i + 2]));
-        
-        figure[i + 1] = ((matrix[1][0] * figure[i]) + (matrix[1][1] * figure[i + 1]) + (matrix[1][2] * figure[i + 2]));
-    
-        figure[i + 2] = ((matrix[2][0] * figure[i]) + (matrix[2][1] * figure[i + 1]) + (matrix[2][2] * figure[i + 2]));
 
-        cout <<"figure ->" << i << " " << figure[i] << endl;
-        cout << "figure ->" << i+1 << " " << figure[i+1] << endl;
-        cout << "figure ->" << i+2 << " " << figure[i+2] << endl;
+        figure[i] = ((matrix[0][0] * figure[i]) + (matrix[0][1] * figure[1]) + (matrix[0][2] * figure[i+2]));
+        figure[i + 1] = ((matrix[1][0] * figure[i]) + (matrix[1][1] * figure[i+1]) + (matrix[1][2] * figure[i+2]));
+
+        cout <<"figure " << i << " -> " << figure[i] << endl;
+        cout << "figure " << i+1 << " -> " << figure[i+1] << endl;
+      
     }
-    
 }
-
-
-//void matrixT(float x, float y , vector<float>& figure) {
-  
-vector < vector<float> >matrixTranslate = { {1.0f,0.0f,X},{0.0f,1.0f,Y},{0.0f,0.0f,1.0f} };
-    //moveMatrix(figure, matrixTranslate);
-
 
 
 
@@ -102,16 +115,6 @@ const char* fragmentShaderSource =
 "{\n"
 "   FragColor = ourColor;\n"
 "}\n\0";
-
-
-// Matrices
-
-
-
-float W, H;
-vector < vector<float> >matrixScale = { {W,0.0f,0.0f},{0.0f,H,0.0f},{0.0f,0.0f,1.0f} };
-
-
 
 
 
@@ -393,7 +396,41 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+void transM(vector<float>& figure, float x, float y) {
+    glm::mat3 translate(glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(x, y, 1));
 
+    for (int i = 0; i < figure.size(); i += 3) {
+        glm::vec3 temp(figure[i], figure[i + 1], 1);
+        temp = translate * temp;
+
+        figure[i] = temp[0];
+        figure[i + 1] = temp[1];
+    }
+}
+
+void scaleM(vector<float>& figure, float w, float h) {
+    glm::mat2 translate(glm::vec2(w, 0), glm::vec2(0, h));
+
+    for (int i = 0; i < figure.size(); i += 3) {
+        glm::vec2 temp(figure[i], figure[i + 1]);
+        temp = translate * temp;
+
+        figure[i] = temp[0];
+        figure[i + 1] = temp[1];
+    }
+}
+
+void rotateM(vector<float>& figure, int angle) {
+    glm::mat2 translate(glm::vec2(cos(angle), -sin(angle)), glm::vec2(sin(angle), cos(angle)));
+
+    for (int i = 0; i < figure.size(); i += 3) {
+        glm::vec2 temp(figure[i], figure[i + 1]);
+        temp = translate * temp;
+
+        figure[i] = temp[0];
+        figure[i + 1] = temp[1];
+    }
+}
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -464,25 +501,110 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         modo = 1;
     }
 
-    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        
         X += 0.1f;
         Y += 0.1f;
-        cout << "X -> " << X << endl;
-        cout << "Y -> " << Y << endl;
-        moveMatrix(triangle, matrixTranslate);
-        drawTriangle();
+        if (figure == 'T') {
+            transM(triangle, X, Y);
+            drawTriangle();
+        }
+        if (figure == 'S') {
+            transM(star, X, Y);
+            drawStar();
+        }
+        if (figure == 'P') {
+            transM(pizza, X, Y);
+            drawPizza();
+        }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        X -= 0.1f;
+        Y -= 0.1f;
+        if (figure == 'T') {
+            transM(triangle, X, Y);
+            drawTriangle();
+        }
+        if (figure == 'S') {
+            transM(star, X, Y);
+            drawStar();
+        }
+        if (figure == 'P') {
+            transM(pizza, X, Y);
+            drawPizza();
+        }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+
+        W = 0.8f;
+        H = 0.8f;
+        if (figure == 'T') {
+            scaleM(triangle, W, H);
+            drawTriangle();
+        }
+        if (figure == 'S') {
+            scaleM(star, W, H);
+            drawStar();
+        }
+        if (figure == 'P') {
+            scaleM(pizza, W, H);
+            drawPizza();
+        }
     }
 
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
-        cout << "X -> " << X << endl;
-        cout << "Y -> " << Y << endl;
-        X -= 0.1f;
-        Y -= 0.1f;
-        moveMatrix(triangle, matrixTranslate);
-        drawTriangle();
+
+        W = 0.16f;
+        H = 0.16f;
+        if (figure == 'T') {
+            scaleM(triangle, W, H);
+            drawTriangle();
+        }
+        if (figure == 'S') {
+            scaleM(star, W, H);
+            drawStar();
+        }
+        if (figure == 'P') {
+            scaleM(pizza, W, H);
+            drawPizza();
+        }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        angle = 30;
+        if (figure == 'T') {
+            rotateM(triangle,angle);
+            drawTriangle();
+        }
+        if (figure == 'S') {
+            rotateM(star, angle);
+            drawStar();
+        }
+        if (figure == 'P') {
+            rotateM(pizza, angle);
+            drawPizza();
+        }
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        angle = -30;
+        if (figure == 'T') {
+            rotateM(triangle, angle);
+            drawTriangle();
+        }
+        if (figure == 'S') {
+            rotateM(star, angle);
+            drawStar();
+        }
+        if (figure == 'P') {
+            rotateM(pizza, angle);
+            drawPizza();
+        }
     }
        
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
+
