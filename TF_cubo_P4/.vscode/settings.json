@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "color.h": "c",
+        "facecube.h": "c",
+        "coordcube.h": "c",
+        "prunetable_helpers.h": "c",
+        "stat.h": "c",
+        "cubiecube.h": "c",
+        "stdio.h": "c"
+    }
+}
